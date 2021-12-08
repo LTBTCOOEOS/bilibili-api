@@ -11,7 +11,7 @@ import json
 import re
 import asyncio
 import atexit
-
+import random
 from ..exceptions import ResponseCodeException, ResponseException, NetworkException
 from .Credential import Credential
 from .. import settings
@@ -70,7 +70,15 @@ async def request(method: str,
         "Referer": "https://www.bilibili.com",
         "User-Agent": "Mozilla/5.0"
     }
-    headers = DEFAULT_HEADERS
+
+
+
+    # headers = DEFAULT_HEADERS
+    # @James Setup Ip header
+    tunnel = random.randint(1,10000)
+    headers = {"Proxy-Tunnel":str(tunnel)}
+
+
 
     if params is None:
         params = {}
@@ -103,8 +111,9 @@ async def request(method: str,
         config["data"] = json.dumps(config["data"])
 
     # 如果用户提供代理则设置代理
-    if settings.proxy:
-        config["proxy"] = settings.proxy
+    # 跳过if判断直接使用代理
+    # if settings.proxy:
+    config["proxy"] = settings.proxy
 
     session = get_session()
 
