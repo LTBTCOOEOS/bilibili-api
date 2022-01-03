@@ -1,5 +1,5 @@
 import asyncio
-from asyncio import run
+import csv
 from datetime import time
 import time, os
 import selenium
@@ -30,6 +30,10 @@ proxyMeta = "http://%(user)s:%(pass)s@%(host)s:%(port)s" % {
 }
 # settings.proxy = proxyMeta
 
+
+presist_data_file_name = "presist_file.csv"
+
+
 myRoom = 23982147
 #room = live.LiveDanmaku(23839907)
 # room = live.LiveDanmaku(3645373)
@@ -56,9 +60,16 @@ def sendJsonWithPayloadTypeUDP(myPayloadType, payload):
     dicDataWithPayloadType = {"payloadType": myPayloadType,
                               "payload": payload}
     jsonDataWithPayloadType = json.dumps(dicDataWithPayloadType)
-    print(jsonDataWithPayloadType)
+    # print(time.asctime())
+    # print(jsonDataWithPayloadType)
+    with open(presist_data_file_name,'a+',newline='') as csvfile:
+        fieldnames = ['time','room','dataType','data']
+        writer = csv.DictWriter(csvfile,fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerow({'time':time.asctime(),'room':myRoom,'dataType':myPayloadType,'data':payload})
     sock.sendto(jsonDataWithPayloadType.encode('utf-8'),
                 (UDP_IP, UDP_PORT))
+
 
 
 @room.on('INTERACT_WORD')
@@ -175,28 +186,28 @@ async def get_top_three_data_thread():
         print("start sleeping")
         await asyncio.sleep(1)
         print("sleep finished")
+        top_3_player = {"rank1": {"uname":"","uscore":""},
+                        "rank2": {"uname":"","uscore":""},
+                        "rank3": {"uname":"","uscore":""}}
         try:
-            rank_1_player = {"rank":1,
-                             "uname":driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(1) > div:nth-child(3)").get_attribute('innerHTML'),
-                             "uscore":driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(1) > div:nth-child(4)").get_attribute('innerHTML')}
-            print(rank_1_player)
+            top_3_player["rank1"]["uname"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(1) > div:nth-child(3)").get_attribute('innerHTML')
+            top_3_player["rank1"]["uscore"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(1) > div:nth-child(4)").get_attribute('innerHTML')
         except selenium.common.exceptions.NoSuchElementException:
-            print("No rank1")
+            top_3_player["rank1"]["uname"] = "NOPLAYER"
         try:
-            rank_2_player = {"rank":2,
-                             "uname":driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(2) > div:nth-child(3)").get_attribute('innerHTML'),
-                             "uscore":driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(2) > div:nth-child(4)").get_attribute('innerHTML')}
-            print(rank_2_player)
+            top_3_player["rank2"]["uname"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(2) > div:nth-child(3)").get_attribute('innerHTML')
+            top_3_player["rank2"]["uscore"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(2) > div:nth-child(4)").get_attribute('innerHTML')
         except selenium.common.exceptions.NoSuchElementException:
-            print("No rank2")
+            top_3_player["rank2"]["uname"] = "NOPLAYER"
         try:
-            rank_3_player = {"rank":3,
-                             "uname":driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(3) > div:nth-child(3)").get_attribute('innerHTML'),
-                             "uscore":driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(3) > div:nth-child(4)").get_attribute('innerHTML')}
-            print(rank_3_player)
+            top_3_player["rank3"]["uname"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(3) > div:nth-child(3)").get_attribute('innerHTML')
+            top_3_player["rank3"]["uscore"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(3) > div:nth-child(4)").get_attribute('innerHTML')
+        except selenium.common.exceptions.NoSuchElementException:
+            top_3_player["rank3"]["uname"] = "NOPLAYER"
+        print(top_3_player)
+        jsonTop3Data = json.dumps(top_3_player)
+        sendJsonWithPayloadTypeUDP(payloadType.TOP_THREE,jsonTop3Data)
 
-        except selenium.common.exceptions.NoSuchElementException:
-            print("No rank3")
     driver.quit()
 
 
