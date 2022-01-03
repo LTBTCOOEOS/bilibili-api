@@ -187,24 +187,24 @@ async def get_top_three_data_thread():
         print("start sleeping")
         await asyncio.sleep(1)
         print("sleep finished")
-        top_3_player = {"rank1": {"uname":"","uscore":""},
-                        "rank2": {"uname":"","uscore":""},
-                        "rank3": {"uname":"","uscore":""}}
+        top_3_player = {"rank1Player": {"uname":"","uscore":""},
+                        "rank2Player": {"uname":"","uscore":""},
+                        "rank3Player": {"uname":"","uscore":""}}
         try:
-            top_3_player["rank1"]["uname"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(1) > div:nth-child(3)").get_attribute('innerHTML')
-            top_3_player["rank1"]["uscore"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(1) > div:nth-child(4)").get_attribute('innerHTML')
+            top_3_player["rank1Player"]["uname"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(1) > div:nth-child(3)").get_attribute('innerHTML')
+            top_3_player["rank1Player"]["uscore"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(1) > div:nth-child(4)").get_attribute('innerHTML')
         except selenium.common.exceptions.NoSuchElementException:
-            top_3_player["rank1"]["uname"] = "NOPLAYER"
+            top_3_player["rank1Player"]["uname"] = "NOPLAYER"
         try:
-            top_3_player["rank2"]["uname"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(2) > div:nth-child(3)").get_attribute('innerHTML')
-            top_3_player["rank2"]["uscore"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(2) > div:nth-child(4)").get_attribute('innerHTML')
+            top_3_player["rank2Player"]["uname"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(2) > div:nth-child(3)").get_attribute('innerHTML')
+            top_3_player["rank2Player"]["uscore"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(2) > div:nth-child(4)").get_attribute('innerHTML')
         except selenium.common.exceptions.NoSuchElementException:
-            top_3_player["rank2"]["uname"] = "NOPLAYER"
+            top_3_player["rank2Player"]["uname"] = "NOPLAYER"
         try:
-            top_3_player["rank3"]["uname"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(3) > div:nth-child(3)").get_attribute('innerHTML')
-            top_3_player["rank3"]["uscore"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(3) > div:nth-child(4)").get_attribute('innerHTML')
+            top_3_player["rank3Player"]["uname"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(3) > div:nth-child(3)").get_attribute('innerHTML')
+            top_3_player["rank3Player"]["uscore"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(3) > div:nth-child(4)").get_attribute('innerHTML')
         except selenium.common.exceptions.NoSuchElementException:
-            top_3_player["rank3"]["uname"] = "NOPLAYER"
+            top_3_player["rank3Player"]["uname"] = "NOPLAYER"
         print(top_3_player)
         jsonTop3Data = json.dumps(top_3_player)
         sendJsonWithPayloadTypeUDP(payloadType.TOP_THREE,jsonTop3Data)
