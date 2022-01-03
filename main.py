@@ -28,13 +28,14 @@ proxyMeta = "http://%(user)s:%(pass)s@%(host)s:%(port)s" % {
     "user" : proxyUser,
     "pass" : proxyPass,
 }
-# settings.proxy = proxyMeta
+settings.proxy = proxyMeta
 
 
 presist_data_file_name = "presist_file.csv"
 
 
-myRoom = 23982147
+# myRoom = 23982147
+myRoom = 3645373
 #room = live.LiveDanmaku(23839907)
 # room = live.LiveDanmaku(3645373)
 room = live.LiveDanmaku(myRoom)
@@ -42,7 +43,7 @@ room = live.LiveDanmaku(myRoom)
 # communication with unity c#
 UDP_IP = "127.0.0.1"
 # UDP_IP = "localhost"
-UDP_PORT = 60005
+UDP_PORT = 60009
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
 
 
@@ -217,3 +218,4 @@ tasks = [get_top_three_data_thread(),
          room.connect()]
 loop.run_until_complete(asyncio.wait(tasks))
 
+# sync(room.connect())
