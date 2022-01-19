@@ -1,49 +1,16 @@
-import asyncio
-import csv
 from datetime import time
-import time, os
-import selenium
+import time, os, selenium, asyncio, csv, socket, json
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-
 from bilibili_api import live, sync
-import socket
-import json
 from enum import IntEnum
 from bilibili_api import settings
-# live room parameters
 from bilibili_api.user import User
+from LTB_Config import LTB_Config
 
-# 代理服务器(产品官网 www.16yun.cn)
-proxyHost = "u7713.20.tn.16yun.cn"
-proxyPort = "6227"
-
-# 代理验证信息
-proxyUser = "16PADDGK"
-proxyPass = "649418"
-
-proxyMeta = "http://%(user)s:%(pass)s@%(host)s:%(port)s" % {
-    "host" : proxyHost,
-    "port" : proxyPort,
-    "user" : proxyUser,
-    "pass" : proxyPass,
-}
-settings.proxy = proxyMeta
-
-
-presist_data_file_name = "presist_file.csv"
-
-
-# myRoom = 23982147
-myRoom = 3645373
-#room = live.LiveDanmaku(23839907)
-# room = live.LiveDanmaku(3645373)
-room = live.LiveDanmaku(myRoom)
-#room = live.LiveDanmaku(22884968)
-# communication with unity c#
-UDP_IP = "127.0.0.1"
-# UDP_IP = "localhost"
-UDP_PORT = 60009
+# set up proxy
+settings.proxy = LTB_Config.proxyMeta
+room = live.LiveDanmaku(LTB_Config.myRoom)
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
 
 
@@ -61,15 +28,13 @@ def sendJsonWithPayloadTypeUDP(myPayloadType, payload):
     dicDataWithPayloadType = {"payloadType": myPayloadType,
                               "payload": payload}
     jsonDataWithPayloadType = json.dumps(dicDataWithPayloadType)
-    # print(time.asctime())
-    # print(jsonDataWithPayloadType)
-    with open(presist_data_file_name,'a+',newline='') as csvfile:
-        fieldnames = ['time','room','dataType','data']
-        writer = csv.DictWriter(csvfile,fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerow({'time':time.asctime(),'room':myRoom,'dataType':myPayloadType,'data':payload})
+    # with open(presist_data_file_name,'a+',newline='') as csvfile:
+    #     fieldnames = ['time','room','dataType','data']
+    #     writer = csv.DictWriter(csvfile,fieldnames=fieldnames)
+    #     writer.writeheader()
+    #     writer.writerow({'time':time.asctime(),'room':LTB_Config.myRoom,'dataType':myPayloadType,'data':payload})
     sock.sendto(jsonDataWithPayloadType.encode('utf-8'),
-                (UDP_IP, UDP_PORT))
+                (LTB_Config.UDP_IP, LTB_Config.UDP_PORT))
 
 
 
@@ -215,7 +180,10 @@ async def get_top_three_data_thread():
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 tasks = [get_top_three_data_thread(),
-         room.connect()]
+             room.connect()]
 loop.run_until_complete(asyncio.wait(tasks))
 
 # sync(room.connect())
+
+# if __name__ == '__main__':
+
