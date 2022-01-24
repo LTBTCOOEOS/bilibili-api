@@ -24,7 +24,6 @@ class payloadType(IntEnum):
 
 
 def sendJsonWithPayloadTypeUDP(myPayloadType, payload):
-
     dicDataWithPayloadType = {"payloadType": myPayloadType,
                               "payload": payload}
     jsonDataWithPayloadType = json.dumps(dicDataWithPayloadType)
@@ -37,10 +36,8 @@ def sendJsonWithPayloadTypeUDP(myPayloadType, payload):
                 (LTB_Config.UDP_IP, LTB_Config.UDP_PORT))
 
 
-
 @room.on('INTERACT_WORD')
 async def on_join(event):
-
     myData = event["data"]
     myLayer2Data = myData["data"]
     myUserID = myLayer2Data["uid"]
@@ -57,17 +54,16 @@ async def on_join(event):
 
 @room.on('DANMU_MSG')
 async def on_danmaku(event):
-
     myData = event["data"]
     myInfo = myData["info"]
     myMsg = myInfo[1]
     myUserID = myInfo[2][0]
     myUserName = myInfo[2][1]
 
-    #construct json
-    dicDmMsg = {"MSG":myMsg,
-                "USERID":myUserID,
-                "USERNAME":myUserName}
+    # construct json
+    dicDmMsg = {"MSG": myMsg,
+                "USERID": myUserID,
+                "USERNAME": myUserName}
     jsonDmMsg = json.dumps(dicDmMsg)
     sendJsonWithPayloadTypeUDP(payloadType.NEW_DANMU,
                                jsonDmMsg)
@@ -95,11 +91,10 @@ async def on_gift(event):
 
 @room.on('ALL')
 async def on_face(event):
-
     myFaceJson = json.dumps(event)
-    if("face" in myFaceJson):
-        startPoint = myFaceJson.find("face")+8
-        endPoint = myFaceJson.find(",",startPoint,-1)-1
+    if ("face" in myFaceJson):
+        startPoint = myFaceJson.find("face") + 8
+        endPoint = myFaceJson.find(",", startPoint, -1) - 1
         dynamicUrl = myFaceJson[startPoint:endPoint]
         listDynamicUrl = list(dynamicUrl)
         listDynamicUrl[8] = '0'
@@ -107,12 +102,12 @@ async def on_face(event):
 
         myFace = staticFaceUrl
 
-        uidStartPoint = myFaceJson.find("uid")+6
-        uidEndPoint = myFaceJson.find(",",uidStartPoint,-1)
+        uidStartPoint = myFaceJson.find("uid") + 6
+        uidEndPoint = myFaceJson.find(",", uidStartPoint, -1)
 
         myUID = myFaceJson[uidStartPoint:uidEndPoint]
 
-        #construct dic
+        # construct dic
 
         dicFaceData = {"uid": myUID,
                        "uface": myFace}
@@ -120,11 +115,12 @@ async def on_face(event):
         sendJsonWithPayloadTypeUDP(payloadType.ANY_FACE,
                                    jsonFaceData)
 
+
 def sendFaceData(event):
     myFaceJson = json.dumps(event)
-    if("face" in myFaceJson):
-        startPoint = myFaceJson.find("face")+8
-        endPoint = myFaceJson.find(",",startPoint,-1)-1
+    if ("face" in myFaceJson):
+        startPoint = myFaceJson.find("face") + 8
+        endPoint = myFaceJson.find(",", startPoint, -1) - 1
         dynamicUrl = myFaceJson[startPoint:endPoint]
         listDynamicUrl = list(dynamicUrl)
         listDynamicUrl[8] = '0'
@@ -132,58 +128,71 @@ def sendFaceData(event):
 
         myFace = staticFaceUrl
 
-        uidStartPoint = myFaceJson.find("uid")+6
-        uidEndPoint = myFaceJson.find(",",uidStartPoint,-1)
+        uidStartPoint = myFaceJson.find("uid") + 6
+        uidEndPoint = myFaceJson.find(",", uidStartPoint, -1)
 
         myUID = myFaceJson[uidStartPoint:uidEndPoint]
 
-        #construct dic
+        # construct dic
 
-        dicFaceData = {"uid": myUID,"uface": myFace}
+        dicFaceData = {"uid": myUID, "uface": myFace}
         jsonFaceData = json.dumps(dicFaceData)
-        sendJsonWithPayloadTypeUDP(payloadType.ANY_FACE,jsonFaceData)
+        sendJsonWithPayloadTypeUDP(payloadType.ANY_FACE, jsonFaceData)
+
 
 async def get_top_three_data_thread():
     # baseurl = "https://live.bilibili.com/3645373"
-    baseurl = "https://live.bilibili.com/"+str(myRoom)
+    baseurl = "https://live.bilibili.com/" + str(LTB_Config.myRoom)
     driver = webdriver.Firefox()
     driver.get(baseurl)
     while True:
         print("start sleeping")
         await asyncio.sleep(1)
         print("sleep finished")
-        top_3_player = {"rank1Player": {"uname":"","uscore":""},
-                        "rank2Player": {"uname":"","uscore":""},
-                        "rank3Player": {"uname":"","uscore":""}}
+        top_3_player = {"rank1Player": {"uname": "", "uscore": ""},
+                        "rank2Player": {"uname": "", "uscore": ""},
+                        "rank3Player": {"uname": "", "uscore": ""}}
         try:
-            top_3_player["rank1Player"]["uname"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(1) > div:nth-child(3)").get_attribute('innerHTML')
-            top_3_player["rank1Player"]["uscore"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(1) > div:nth-child(4)").get_attribute('innerHTML')
+            top_3_player["rank1Player"]["uname"] = driver.find_element(By.CSS_SELECTOR,
+                                                                       "div.top3-item:nth-child(1) > div:nth-child(3)").get_attribute(
+                'innerHTML')
+            top_3_player["rank1Player"]["uscore"] = driver.find_element(By.CSS_SELECTOR,
+                                                                        "div.top3-item:nth-child(1) > div:nth-child(4)").get_attribute(
+                'innerHTML')
         except selenium.common.exceptions.NoSuchElementException:
             top_3_player["rank1Player"]["uname"] = "NOPLAYER"
         try:
-            top_3_player["rank2Player"]["uname"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(2) > div:nth-child(3)").get_attribute('innerHTML')
-            top_3_player["rank2Player"]["uscore"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(2) > div:nth-child(4)").get_attribute('innerHTML')
+            top_3_player["rank2Player"]["uname"] = driver.find_element(By.CSS_SELECTOR,
+                                                                       "div.top3-item:nth-child(2) > div:nth-child(3)").get_attribute(
+                'innerHTML')
+            top_3_player["rank2Player"]["uscore"] = driver.find_element(By.CSS_SELECTOR,
+                                                                        "div.top3-item:nth-child(2) > div:nth-child(4)").get_attribute(
+                'innerHTML')
         except selenium.common.exceptions.NoSuchElementException:
             top_3_player["rank2Player"]["uname"] = "NOPLAYER"
         try:
-            top_3_player["rank3Player"]["uname"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(3) > div:nth-child(3)").get_attribute('innerHTML')
-            top_3_player["rank3Player"]["uscore"] = driver.find_element(By.CSS_SELECTOR,"div.top3-item:nth-child(3) > div:nth-child(4)").get_attribute('innerHTML')
+            top_3_player["rank3Player"]["uname"] = driver.find_element(By.CSS_SELECTOR,
+                                                                       "div.top3-item:nth-child(3) > div:nth-child(3)").get_attribute(
+                'innerHTML')
+            top_3_player["rank3Player"]["uscore"] = driver.find_element(By.CSS_SELECTOR,
+                                                                        "div.top3-item:nth-child(3) > div:nth-child(4)").get_attribute(
+                'innerHTML')
         except selenium.common.exceptions.NoSuchElementException:
             top_3_player["rank3Player"]["uname"] = "NOPLAYER"
         print(top_3_player)
         jsonTop3Data = json.dumps(top_3_player)
-        sendJsonWithPayloadTypeUDP(payloadType.TOP_THREE,jsonTop3Data)
+        sendJsonWithPayloadTypeUDP(payloadType.TOP_THREE, jsonTop3Data)
 
     driver.quit()
 
 
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
-tasks = [get_top_three_data_thread(),
-             room.connect()]
+# tasks = [get_top_three_data_thread(),
+#              room.connect()]
+tasks = [room.connect()]
 loop.run_until_complete(asyncio.wait(tasks))
 
 # sync(room.connect())
 
 # if __name__ == '__main__':
-

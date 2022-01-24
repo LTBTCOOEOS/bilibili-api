@@ -1156,3 +1156,7 @@ JavaScript warning: https://s1.hdslb.com/bfs/seed/log/report/log-reporter.js, li
 JavaScript warning: https://s1.hdslb.com/bfs/seed/log/report/log-reporter.js, line 1: WebGL context was lost.
 1642596623113	Marionette	INFO	Stopped listening on port 64893
 console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkError when attempting to fetch resource.
+1642947498074	geckodriver	INFO	Listening on 127.0.0.1:62730
+1642947498081	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "--marionette" "--remote-debugging-port" "62731" "-foreground" "-no-remote" "-profile" "/var/folders/4l/fqkwpn0j6yj0264mv6nrh4x40000gn/T/rust_mozprofilewpfFzy"
+UNSUPPORTED (log once): POSSIBLE ISSUE: unit 1 GLD_TEXTURE_INDEX_2D is unloadable and bound to sampler type (Float) - using zero texture because texture unloadable
+DevTools listening on ws://localhost:62731/devtools/browser/5249ecbc-5945-407b-a0ae-ad0eaddfdb88

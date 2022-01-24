@@ -5,7 +5,6 @@ bilibili_api.video
 
 注意，同时存在 page_index 和 cid 的参数，两者至少提供一个。
 """
-
 from copy import copy
 from enum import Enum
 from typing import Coroutine
