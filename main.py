@@ -8,9 +8,36 @@ from bilibili_api import settings
 from bilibili_api.user import User
 from LTB_Config import LTB_Config
 
-# set up proxy
-settings.proxy = LTB_Config.proxyMeta
-room = live.LiveDanmaku(LTB_Config.myRoom)
+# 代理服务器(产品官网 www.16yun.cn)
+proxyHost = "u7713.20.tn.16yun.cn"
+proxyPort = "6227"
+
+# 代理验证信息
+proxyUser = "16PADDGK"
+proxyPass = "649418"
+
+proxyMeta = "http://%(user)s:%(pass)s@%(host)s:%(port)s" % {
+    "host" : proxyHost,
+    "port" : proxyPort,
+    "user" : proxyUser,
+    "pass" : proxyPass,
+}
+#settings.proxy = proxyMeta
+
+
+presist_data_file_name = "presist_file.csv"
+
+
+# myRoom = 23982147
+myRoom = 737562
+#room = live.LiveDanmaku(23839907)
+# room = live.LiveDanmaku(3645373)
+room = live.LiveDanmaku(myRoom)
+#room = live.LiveDanmaku(22884968)
+# communication with unity c#
+UDP_IP = "127.0.0.1"
+# UDP_IP = "localhost"
+UDP_PORT = 60001
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
 
 
@@ -46,8 +73,8 @@ async def on_join(event):
     jsonJoinMsg = json.dumps(event)
     sendJsonWithPayloadTypeUDP(payloadType.NEW_PLAYER,
                                jsonJoinMsg)
-    userInfo = await User(myUserID).get_user_info()
-    sendFaceData(userInfo)
+    # userInfo = await User(myUserID).get_user_info()
+    # sendFaceData(userInfo)
 
     print("new player")
 
@@ -68,8 +95,8 @@ async def on_danmaku(event):
     sendJsonWithPayloadTypeUDP(payloadType.NEW_DANMU,
                                jsonDmMsg)
 
-    userInfo = await User(myUserID).get_user_info()
-    sendFaceData(userInfo)
+    # userInfo = await User(myUserID).get_user_info()
+    # sendFaceData(userInfo)
     # jsonUserInfo = json.dumps(userInfo)
     # sendJsonWithPayloadTypeUDP(payloadType.NEW_DANMU,
     #                            jsonUserInfo)
@@ -146,12 +173,12 @@ async def get_top_three_data_thread():
     driver = webdriver.Firefox()
     driver.get(baseurl)
     while True:
-        print("start sleeping")
+        # print("start sleeping")
         await asyncio.sleep(1)
-        print("sleep finished")
-        top_3_player = {"rank1Player": {"uname": "", "uscore": ""},
-                        "rank2Player": {"uname": "", "uscore": ""},
-                        "rank3Player": {"uname": "", "uscore": ""}}
+        # print("sleep finished")
+        top_3_player = {"rank1Player": {"uname":"","uscore":""},
+                        "rank2Player": {"uname":"","uscore":""},
+                        "rank3Player": {"uname":"","uscore":""}}
         try:
             top_3_player["rank1Player"]["uname"] = driver.find_element(By.CSS_SELECTOR,
                                                                        "div.top3-item:nth-child(1) > div:nth-child(3)").get_attribute(
@@ -179,7 +206,7 @@ async def get_top_three_data_thread():
                 'innerHTML')
         except selenium.common.exceptions.NoSuchElementException:
             top_3_player["rank3Player"]["uname"] = "NOPLAYER"
-        print(top_3_player)
+        # print(top_3_player)
         jsonTop3Data = json.dumps(top_3_player)
         sendJsonWithPayloadTypeUDP(payloadType.TOP_THREE, jsonTop3Data)
 
